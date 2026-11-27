@@ -1,0 +1,7 @@
+node_modules/
+.dev.vars
+.wrangler/
+*.log
+__pycache__/
+*.pyc
+gha/.image_cache/
