@@ -2,11 +2,13 @@ name = "fsdm"
 main = "src/index.ts"
 compatibility_date = "2026-11-01"
 compatibility_flags = ["nodejs_compat"]
+keep_vars = true
 
 [[d1_databases]]
-binding = "DB"
-database_name = "Zh"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+#binding = "DB"
+#database_name = "fsdm"
+#database_id = "REPLACE_WITH_D1_DATABASE_ID"
 
 [vars]
-ENVIRONMENT = "production"
+#TRIGGER_TOKEN = tk
+#GITHUB_PAT = gh
