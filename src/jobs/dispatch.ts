@@ -1,7 +1,6 @@
 /** 触发 GHA：传 jobId + job 名 + 附加参数，任务数据和图片由 GHA 自己读飞书。 */
 import type { Env } from "../types";
-
-const REPO = "mrjg117/FSDM";
+import { loadConfig } from "../config";
 
 export interface DispatchResult {
   ok: true;
@@ -12,10 +11,12 @@ export interface DispatchResult {
 export async function dispatchGha(
   env: Env, jobId: string, job: string, args: string,
 ): Promise<DispatchResult> {
-  const resp = await fetch(`https://api.github.com/repos/${REPO}/dispatches`, {
+  const { repo, pat } = loadConfig(env).GH_CONFIG;
+  if (!repo || !pat) throw new Error("GH_CONFIG 缺少 repo / pat");
+  const resp = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${env.GITHUB_PAT}`,
+      Authorization: `Bearer ${pat}`,
       Accept: "application/vnd.github+json",
       "Content-Type": "application/json",
       "X-GitHub-Api-Version": "2022-11-28",

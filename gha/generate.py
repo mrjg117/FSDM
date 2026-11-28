@@ -44,13 +44,15 @@ import feishu as fs
 import ledger as L
 import d1
 import sources as S
-import cache  # noqa: F401  （确保缓存目录常量加载）
+import cache  # noqa: F401
+import config
 
-APP_TOKEN = os.environ.get("FEISHU_APP_TOKEN", "EohXbZt1waUfsZsxLigcfAssnyf")
-TABLE_RESOURCE = os.environ.get("FEISHU_TABLE_RESOURCE", "tblXiHi2IIeS8R41")
-TABLE_TEMPLATE = os.environ.get("FEISHU_TABLE_TEMPLATE", "tblUYfX9KFkYyE8l")
-TABLE_DOCUMENT = os.environ.get("FEISHU_TABLE_DOCUMENT", "tblzwpLmyThbtJaQ")
-OUTPUT_FOLDER = os.environ.get("OUTPUT_FOLDER_TOKEN", "ZE4wfiDFdlVsyYdAetOck2VDnog")
+APP_TOKEN = config.get("FEISHU_CONFIG", "app_token")
+_TABLES = config.get("FEISHU_CONFIG", "tables", {})
+TABLE_RESOURCE = _TABLES.get("resource", "")
+TABLE_TEMPLATE = _TABLES.get("template", "")
+TABLE_DOCUMENT = _TABLES.get("document", "")
+OUTPUT_FOLDER = config.get("FEISHU_CONFIG", "output_folder")
 
 # 资源表变量字段（应用模板列已废弃：模板归属由模板表启用关联决定）
 RESOURCE_FIELDS = [

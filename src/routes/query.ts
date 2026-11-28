@@ -1,4 +1,5 @@
 /** 查询台：只读 D1 即时查询。GET /query?token=X&job_id= / doc_key= / subject=&product= */
+import { loadConfig } from "../config";
 import type { Env } from "../types";
 
 function json(data: unknown, status = 200): Response {
@@ -8,14 +9,17 @@ function json(data: unknown, status = 200): Response {
 }
 
 export async function handleQuery(request: Request, env: Env): Promise<Response> {
+  const cfg = loadConfig(env);
   const url = new URL(request.url);
-  const token = url.searchParams.get("token") ?? "";
-  if (!env.TRIGGER_TOKEN || token !== env.TRIGGER_TOKEN) {
+  const token = url.searchParams.get("token")
+    ?? request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "")
+    ?? "";
+  if (!cfg.WORKER_CONFIG.trigger_token || token !== cfg.WORKER_CONFIG.trigger_token) {
     return json({ error: "unauthorized" }, 401);
   }
   if (!env.DB) return json({ error: "no d1 binding" }, 500);
 
-  const p = `${env.TABLE_PREFIX ?? ""}`;
+  const p = cfg.CF_CONFIG.table_prefix;
   const jobId = url.searchParams.get("job_id");
   const docKey = url.searchParams.get("doc_key");
   const subject = url.searchParams.get("subject");

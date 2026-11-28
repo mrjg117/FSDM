@@ -1,10 +1,10 @@
-/** Worker 环境变量：门卫 + 查询台。D1 可读写（发单记 pending / 查询只读）。 */
+/** Worker 环境变量：4 组 JSON 配置段（见 config.ts）。DB 为 Dashboard 绑定的 D1。 */
 import type { D1Database } from "@cloudflare/workers-types";
 
 export interface Env {
   DB: D1Database;
-  TRIGGER_TOKEN: string;
-  GITHUB_PAT: string;
-  TABLE_PREFIX?: string;   // 表名前缀 = 项目名（共用库隔离），如 fsdm_
-  ENVIRONMENT: string;
+  FEISHU_CONFIG?: string;
+  CF_CONFIG?: string;
+  GH_CONFIG?: string;
+  WORKER_CONFIG?: string;
 }

@@ -3,10 +3,9 @@ main = "src/index.ts"
 compatibility_date = "2026-11-01"
 compatibility_flags = ["nodejs_compat"]
 keep_vars = true
-#[[d1_databases]]
-#binding = "DB"
-#database_name = "fsdm"
-#database_id = "REPLACE_WITH_D1_DATABASE_ID"
-#[vars]
-#TRIGGER_TOKEN = tk
-#GITHUB_PAT = gh
+
+# 以下为 Secret 示例（填到 GHA/Worker 的同名 Secret；仓库仅示例，不放真值）
+#FEISHU_CONFIG = {"app_id":"cli_xxx","app_secret":"xxx","app_token":"xxx","tables":{"resource":"tblxxx","template":"tblxxx","document":"tblxxx"},"output_folder":"xxxx"} // 飞书：应用凭证/表ID/输出目录
+#CF_CONFIG = {"account_id":"xxx","d1_database_id":"xxx","api_token":"xxx","table_prefix":"fsdm_"} // Cloudflare：账号/D1库/API令牌/表前缀
+#GH_CONFIG = {"repo":"owner/repo","pat":"ghp_xxx"} // GitHub：目标仓库/触发用PAT
+#WORKER_CONFIG = {"trigger_token":"xxx"} // Worker：接口鉴权令牌

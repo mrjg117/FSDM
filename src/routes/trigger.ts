@@ -1,16 +1,18 @@
 /** 手动触发：验签 → 记 pending（谁干谁写：发单是 Worker 干的）→ dispatch → 立即返回。 */
 import { dispatchGha } from "../jobs/dispatch";
+import { loadConfig } from "../config";
 import type { Env } from "../types";
 
 const JOBS = new Set(["generate", "update"]);
 
 export async function handleTrigger(request: Request, env: Env): Promise<Response> {
+  const cfg = loadConfig(env);
   const url = new URL(request.url);
   const token =
     url.searchParams.get("token") ??
     request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "") ??
     "";
-  if (!env.TRIGGER_TOKEN || token !== env.TRIGGER_TOKEN) {
+  if (!cfg.WORKER_CONFIG.trigger_token || token !== cfg.WORKER_CONFIG.trigger_token) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401, headers: { "Content-Type": "application/json" },
     });
@@ -37,7 +39,7 @@ export async function handleTrigger(request: Request, env: Env): Promise<Respons
   // 记账：发单这步是 Worker 干的，pending 由 Worker 写
   if (env.DB) {
     const now = Date.now();
-    const jobs = `${env.TABLE_PREFIX ?? ""}jobs`;
+    const jobs = `${cfg.CF_CONFIG.table_prefix}jobs`;
     await env.DB.prepare(
       `INSERT INTO ${jobs} (job_id, trigger_type, status, total, done, failed, created_at, updated_at)
        VALUES (?, ?, 'pending', 0, 0, 0, ?, ?)

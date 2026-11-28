@@ -1,6 +1,6 @@
 """飞书 API 最小封装：tenant token、多维表、云盘文件夹、文档块树、图片。
 
-- 凭证从环境变量取（FEISHU_APP_ID / FEISHU_APP_SECRET），不落代码。
+- 凭证从 FEISHU_CONFIG 配置段取，不落代码。
 - curl 强制 -4 --noproxy '*'：飞书直连，不走 GitHub 的代理（代理只给 GitHub）。
 - 图片下载先查本地缓存（cache.py），命中则跳过下载。
 """
@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 
 import cache
+import config
 
 BASE = "https://open.feishu.cn/open-apis"
 
@@ -52,8 +53,8 @@ def get_token():
         "-X", "POST", f"{BASE}/auth/v3/tenant_access_token/internal",
         "-H", "Content-Type: application/json",
         "-d", json.dumps({
-            "app_id": os.environ["FEISHU_APP_ID"],
-            "app_secret": os.environ["FEISHU_APP_SECRET"],
+            "app_id": config.get("FEISHU_CONFIG", "app_id"),
+            "app_secret": config.get("FEISHU_CONFIG", "app_secret"),
         }),
     ])
     return d["tenant_access_token"]

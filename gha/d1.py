@@ -7,11 +7,7 @@
 - 自动建表：ensure_schema() 读 db/schema.sql，替换前缀后 batch 提交（全幂等）。
   调用方在入口处调一次即可，不必再手动 db:init。
 
-环境变量：
-  CLOUDFLARE_ACCOUNT_ID      账号 ID
-  CLOUDFLARE_D1_DATABASE_ID  库 ID
-  CLOUDFLARE_API_TOKEN       API Token（D1 Write）
-  TABLE_PREFIX               表名前缀，默认空（单独库）
+配置段 CF_CONFIG（JSON）：account_id / d1_database_id / api_token / table_prefix
 
 官方接口：
   POST https://api.cloudflare.com/client/v4/accounts/{account}/d1/database/{db}/query
@@ -25,10 +21,12 @@ import time
 import urllib.request
 import urllib.error
 
-ACCOUNT_ID = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
-DATABASE_ID = os.environ.get("CLOUDFLARE_D1_DATABASE_ID", "")
-API_TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN", "")
-TABLE_PREFIX = os.environ.get("TABLE_PREFIX", "")
+import config
+
+ACCOUNT_ID = config.get("CF_CONFIG", "account_id")
+DATABASE_ID = config.get("CF_CONFIG", "d1_database_id")
+API_TOKEN = config.get("CF_CONFIG", "api_token")
+TABLE_PREFIX = config.get("CF_CONFIG", "table_prefix")
 
 BASE = "https://api.cloudflare.com/client/v4/accounts"
 
@@ -50,10 +48,7 @@ class D1Error(RuntimeError):
 
 def _endpoint():
     if not (ACCOUNT_ID and DATABASE_ID and API_TOKEN):
-        raise D1Error(
-            "缺少 D1 凭证：需 CLOUDFLARE_ACCOUNT_ID / "
-            "CLOUDFLARE_D1_DATABASE_ID / CLOUDFLARE_API_TOKEN"
-        )
+        raise D1Error("缺少 D1 凭证：CF_CONFIG 需 account_id / d1_database_id / api_token")
     return f"{BASE}/{ACCOUNT_ID}/d1/database/{DATABASE_ID}/query"
 
 
